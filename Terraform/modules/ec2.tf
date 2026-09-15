@@ -62,7 +62,7 @@ resource "aws_instance" "infra_app_server" {
     }   
 
     tags = {
-        Name = "${var.env}-infra-app-ec2"
+        Name = "${var.env}-infra-app-ec2-${count.index + 1}"
         Environment = var.env
     }
 }
