@@ -1,3 +1,4 @@
 variable "env" {
-  default = "${terraform.workspace}"
+  default = "prod"
+  type = string
 }
