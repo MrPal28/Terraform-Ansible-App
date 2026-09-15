@@ -1,5 +1,5 @@
 module "dev-infra" {
-  source = "./infra-app"
+  source = "./modules"
   env = "dev"
   bucket_name = "zone1"
   ec2_instance_count = 1
@@ -11,7 +11,7 @@ module "dev-infra" {
 }
 
 module "prod-infra" {
-  source = "./infra-app"
+  source = "./modules"
   env = "prod"
   bucket_name = "zone2"
   ec2_instance_count = 2
@@ -23,7 +23,7 @@ module "prod-infra" {
 }
 
 module "stg-infra" {
-  source = "./infra-app"
+  source = "./modules"
   env = "stg"
   bucket_name = "zone3"
   ec2_instance_count = 1
