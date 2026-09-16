@@ -88,16 +88,6 @@ if choice == "1":
         "Ansible/roles/ssh/files/ansible.pub"
     )
 
-    # run(
-    #     "ansible all -m ping",
-    #     cwd="Ansible"
-    # )
-
-    # run(
-    #     "ansible-playbook playbooks/site.yml",
-    #     cwd="Ansible"
-    # )
-
     wait_for_ansible()
 
     run(
