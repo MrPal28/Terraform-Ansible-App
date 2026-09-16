@@ -37,3 +37,8 @@ variable "hash_key" {
   description = "Hash key for DynamoDB table"
   type = string
 }
+
+variable "key_name" {
+  description = "Name of the key pair"
+  type = string
+}

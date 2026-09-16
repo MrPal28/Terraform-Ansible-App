@@ -49,9 +49,9 @@ resource "aws_instance" "infra_app_server" {
 
     count = var.ec2_instance_count #Meta Argument to create multiple instances
 
-    depends_on = [aws_security_group.infra_app_sg, aws_key_pair.terraform_key]
+    depends_on = [aws_security_group.infra_app_sg, var.key_name] # Ensure the security group and key pair are created before the EC2 instance
 
-    key_name = aws_key_pair.terraform_key.key_name
+    key_name = var.key_name
     security_groups = [aws_security_group.infra_app_sg.name]
     instance_type = var.ec2_instance_type
     ami = var.ec2_ami
