@@ -1,5 +1,6 @@
 import subprocess
 import sys
+import time
 
 
 def run(cmd, cwd=None):
@@ -14,6 +15,35 @@ def run(cmd, cwd=None):
     if result.returncode != 0:
         print(f"Command failed: {cmd}")
         sys.exit(1)
+
+def wait_for_ansible(max_retries=10, delay=10):
+
+    for attempt in range(max_retries):
+
+        print(
+            f"\n>>> Checking Ansible connectivity "
+            f"({attempt + 1}/{max_retries})\n"
+        )
+
+        result = subprocess.run(
+            "ansible all -m ping",
+            cwd="Ansible",
+            shell=True
+        )
+
+        if result.returncode == 0:
+            print("\nAll hosts reachable.\n")
+            return
+
+        print(
+            f"\nHosts not ready yet. "
+            f"Retrying in {delay} seconds...\n"
+        )
+
+        time.sleep(delay)
+
+    print("\nERROR: Hosts never became reachable.\n")
+    sys.exit(1)
 
 
 print("""
@@ -58,10 +88,17 @@ if choice == "1":
         "Ansible/roles/ssh/files/ansible.pub"
     )
 
-    run(
-        "ansible all -m ping",
-        cwd="Ansible"
-    )
+    # run(
+    #     "ansible all -m ping",
+    #     cwd="Ansible"
+    # )
+
+    # run(
+    #     "ansible-playbook playbooks/site.yml",
+    #     cwd="Ansible"
+    # )
+
+    wait_for_ansible()
 
     run(
         "ansible-playbook playbooks/site.yml",
