@@ -22,6 +22,6 @@ with open("Ansible/inventory/hosts.ini", "w") as inv:
 
     inv.write("\n[all:vars]\n")
     inv.write("ansible_user=ubuntu\n")
-    inv.write("ansible_ssh_private_key_file=/home/runner/.ssh/id_rsa\n")
+    inv.write("ansible_ssh_private_key_file=/home/ubuntu/.ssh/terraform-ansible-app-key\n")
 
 print("Inventory generated successfully")
