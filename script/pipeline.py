@@ -59,13 +59,13 @@ if choice == "1":
     )
 
     run(
-        "ansible all -i Ansible/inventory/hosts.ini -m ping"
+        "ansible all -m ping",
+        cwd="Ansible"
     )
 
     run(
-        "ansible-playbook "
-        "-i Ansible/inventory/hosts.ini "
-        "Ansible/playbooks/site.yml"
+        "ansible-playbook playbooks/site.yml",
+        cwd="Ansible"
     )
 
 elif choice == "2":
