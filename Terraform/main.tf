@@ -1,0 +1,39 @@
+module "dev-infra" {
+  source = "./modules"
+  env = "dev"
+  bucket_name = "zone1"
+  key_name = aws_key_pair.ansible_key.key_name
+  ec2_instance_count = 1
+  ec2_instance_type = "t2.micro"
+  ec2_ami = "ami-01a00762f46d584a1"
+  ec2_default_storage_size = 8
+  ec2_storage_type = "gp3"
+  hash_key = "studentID"
+}
+
+module "prod-infra" {
+  source = "./modules"
+  env = "prod"
+  bucket_name = "zone2"
+  key_name = aws_key_pair.ansible_key.key_name
+  ec2_instance_count = 2
+  ec2_instance_type = "t3.micro"
+  ec2_ami = "ami-01a00762f46d584a1"
+  ec2_default_storage_size = 8
+  ec2_storage_type = "gp3"
+  hash_key = "studentID"
+}
+
+module "stg-infra" {
+  source = "./modules"
+  env = "stg"
+  bucket_name = "zone3"
+  key_name = aws_key_pair.ansible_key.key_name
+  ec2_instance_count = 1
+  ec2_instance_type = "t2.small"
+  ec2_ami = "ami-01a00762f46d584a1"
+  ec2_default_storage_size = 8
+  ec2_storage_type = "gp3"
+  hash_key = "studentID"
+}
+

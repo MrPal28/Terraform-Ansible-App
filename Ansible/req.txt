@@ -1,0 +1,14 @@
+# CI/CD key gen process
+ssh-keygen -y -f ansible-kp.pem > ~/roles/ssh/files/ansible.pub -> During CI/CD
+
+# Manual key gen process
+ssh-keygen -y -f ansible-kp.pem > /server-setup-using-ansible/roles/ssh/files/ansible.pub
+
+# local to vm key scp
+scp -i ansible-kp.pem ansible-kp.pem ubuntu@23.20.78.94:/home/ubuntu/
+
+# Inside VM
+chmod 400 /home/ubuntu/ansible-kp.pem
+
+# inside inventory
+ansible_ssh_private_key_file=/home/ubuntu/ansible-kp.pem

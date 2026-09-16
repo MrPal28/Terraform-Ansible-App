@@ -1,0 +1,23 @@
+---
+- name: Common Configuration for all servers
+  hosts: all  
+  become: yes
+
+  roles:
+    - common
+    - firewall
+
+- name: Configure Staging and Development Servers
+  hosts: staging:development
+  become: yes
+
+  roles:
+    - apache
+
+- name: Configure Production Server
+  hosts: production
+  become: yes
+
+  roles:
+    - nginx
+

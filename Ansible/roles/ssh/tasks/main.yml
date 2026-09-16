@@ -1,0 +1,21 @@
+---
+# - name: Create ansible user
+#   user:
+#     name: ansible
+#     shell: /bin/bash
+#     groups: sudo
+#     append: yes
+
+- name: Create .ssh directory
+  file:
+    path: /home/ansible/.ssh
+    state: directory
+    owner: ansible
+    group: ansible
+    mode: '0700'
+
+- name: Add public key
+  authorized_key:
+    user: ansible
+    state: present
+    key: "{{ lookup('file', 'files/ansible.pub') }}"

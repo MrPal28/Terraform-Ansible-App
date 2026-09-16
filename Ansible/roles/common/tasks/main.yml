@@ -1,0 +1,33 @@
+---
+- name: Update package cache
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Create ansible group
+  ansible.builtin.group:
+    name: ansible
+    state: present
+
+- name: Create ansible user
+  ansible.builtin.user:
+    name: ansible
+    shell: /bin/bash
+    group: ansible
+    groups: sudo
+    append: yes
+    create_home: true
+    state: present
+
+- name: Configure passwordless sudo
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/ansible
+    content: "ansible ALL=(ALL) NOPASSWD:ALL"
+    mode: '0440'
+
+- name: Install common packages
+  ansible.builtin.apt:
+    name:
+      - python3
+      - git
+      - logrotate
+    state: present
