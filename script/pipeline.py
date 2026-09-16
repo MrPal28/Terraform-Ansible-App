@@ -51,7 +51,7 @@ if choice == "1":
         cwd="Terraform"
     )
 
-    run("python script/generate_inventory.py")
+    run("python3 script/inventory.py")
 
     run(
         "ssh-keygen -y -f ~/.ssh/terraform-ansible-app-key > "
