@@ -88,6 +88,11 @@ elif choice == "2":
         )
 
         run(
+            "aws s3 rm s3://terraform-state-bucket-ap-am-2026 --recursive",
+            cwd="Terraform/remote-backend"
+        )
+
+        run(
             "terraform destroy -auto-approve",
             cwd="Terraform/remote-backend"
         )
