@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }}</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #D22128, #8B0000);
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+
+        .card {
+            text-align: center;
+            padding: 40px;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        h1 { font-size: 3rem; }
+        p { font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>{{ greeting }}</h1>
+        <p>{{ message }}</p>
+    </div>
+</body>
+</html>

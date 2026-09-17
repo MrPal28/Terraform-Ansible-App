@@ -13,3 +13,9 @@
     name: apache2
     state: started
     enabled: true
+  
+- name: Deploy Apache Landing Page
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+  notify: Restart Apache

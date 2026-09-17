@@ -3,3 +3,5 @@
   ansible.builtin.service:
     name: nginx
     state: restarted
+
+# notify: Restart Nginx 

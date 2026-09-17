@@ -21,7 +21,8 @@
 - name: Configure passwordless sudo
   ansible.builtin.copy:
     dest: /etc/sudoers.d/ansible
-    content: "ansible ALL=(ALL) NOPASSWD:ALL"
+    content: |
+      ansible ALL=(ALL) NOPASSWD:ALL
     mode: '0440'
 
 - name: Install common packages
