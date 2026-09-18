@@ -1,0 +1,120 @@
+name: Terraform-Ansible-Automation
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Select Action"
+        required: true
+        default: "apply"
+        type: choice
+        options:
+          - apply
+          - destroy
+
+jobs:
+  infrastructure:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      ####################################################
+      # APPLY
+      ####################################################
+
+      - name: Terraform Init
+        if: github.event.inputs.action == 'apply'
+        working-directory: Terraform
+        run: terraform init
+
+      - name: Terraform Validate
+        if: github.event.inputs.action == 'apply'
+        working-directory: Terraform
+        run: terraform validate
+
+      - name: Terraform Apply
+        if: github.event.inputs.action == 'apply'
+        working-directory: Terraform
+        run: terraform apply -auto-approve
+
+      - name: Export Terraform Outputs
+        if: github.event.inputs.action == 'apply'
+        working-directory: Terraform
+        run: terraform output -json server_inventory > ../inventory.json
+
+      - name: Setup Python
+        if: github.event.inputs.action == 'apply'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Create SSH Private Key
+        if: github.event.inputs.action == 'apply'
+        run: |
+          mkdir -p ~/.ssh
+
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/ansible-kp.pem
+
+          chmod 400 ~/.ssh/ansible-kp.pem
+
+      - name: Set Inventory Key Path
+        if: github.event.inputs.action == 'apply'
+        run: |
+          echo "ANSIBLE_KEY_PATH=/home/runner/.ssh/ansible-kp.pem" >> $GITHUB_ENV
+
+      - name: Generate Inventory
+        if: github.event.inputs.action == 'apply'
+        run: python3 script/inventory.py
+
+      - name: Generate ansible.pub
+        if: github.event.inputs.action == 'apply'
+        run: |
+          ssh-keygen -y \
+          -f ~/.ssh/ansible-kp.pem \
+          > Ansible/roles/ssh/files/ansible.pub
+
+      - name: Install Ansible
+        if: github.event.inputs.action == 'apply'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
+
+      - name: Test Connectivity
+        if: github.event.inputs.action == 'apply'
+        working-directory: Ansible
+        run: |
+          ansible all -m ping
+
+      - name: Run Playbook
+        if: github.event.inputs.action == 'apply'
+        working-directory: Ansible
+        run: |
+          ansible-playbook playbooks/site.yml
+
+      ####################################################
+      # DESTROY
+      ####################################################
+
+      - name: Terraform Init Destroy
+        if: github.event.inputs.action == 'destroy'
+        working-directory: Terraform
+        run: terraform init
+
+      - name: Terraform Destroy
+        if: github.event.inputs.action == 'destroy'
+        working-directory: Terraform
+        run: terraform destroy -auto-approve
