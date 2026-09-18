@@ -1,4 +1,10 @@
 import json
+import os
+
+key_path = os.getenv(
+    "ANSIBLE_KEY_PATH",
+    "/home/ubuntu/.ssh/terraform-ansible-app-key"
+)
 
 with open("inventory.json") as f:
     data = json.load(f)
@@ -22,6 +28,8 @@ with open("Ansible/inventory/hosts.ini", "w") as inv:
 
     inv.write("\n[all:vars]\n")
     inv.write("ansible_user=ubuntu\n")
-    inv.write("ansible_ssh_private_key_file=/home/ubuntu/.ssh/terraform-ansible-app-key\n")
+    inv.write(
+        f"ansible_ssh_private_key_file={key_path}\n"
+    )
 
 print("Inventory generated successfully")
