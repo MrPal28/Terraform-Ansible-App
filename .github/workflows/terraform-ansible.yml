@@ -123,16 +123,26 @@ jobs:
         run: |
           ansible-playbook playbooks/site.yml
 
-      ####################################################
-      # DESTROY
-      ####################################################
+  ####################################################
+  # DESTROY
+  ####################################################
 
-      - name: Terraform Init Destroy
+      - name: Initialize Main Terraform
         if: github.event.inputs.action == 'destroy'
         working-directory: Terraform
         run: terraform init
 
-      - name: Terraform Destroy
+      - name: Destroy Main Infrastructure
         if: github.event.inputs.action == 'destroy'
         working-directory: Terraform
+        run: terraform destroy -auto-approve
+
+      - name: Initialize Remote Backend
+        if: github.event.inputs.action == 'destroy'
+        working-directory: Terraform/remote-backend
+        run: terraform init
+
+      - name: Destroy Remote Backend
+        if: github.event.inputs.action == 'destroy'
+        working-directory: Terraform/remote-backend
         run: terraform destroy -auto-approve
