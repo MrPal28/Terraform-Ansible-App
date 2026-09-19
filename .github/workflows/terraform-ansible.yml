@@ -150,14 +150,25 @@ jobs:
         working-directory: Terraform
         run: terraform destroy -auto-approve
 
-      - name: Empty Backend Bucket
-        if: github.event.inputs.action == 'destroy'
-        run: |
-          aws s3 rm s3://terraform-state-bucket-ap-am-2026 --recursive || true
+      # - name: Empty Backend Bucket
+      #   if: github.event.inputs.action == 'destroy'
+      #   run: |
+      #     aws s3 rm s3://terraform-state-bucket-ap-am-2026 --recursive || true
 
-      - name: Destroy Remote Backend
+      # - name: Destroy Remote Backend
+      #   if: github.event.inputs.action == 'destroy'
+      #   working-directory: Terraform/remote-backend
+      #   run: |
+      #     terraform init
+      #     terraform destroy -auto-approve
+
+      - name: Delete DynamoDB Table
         if: github.event.inputs.action == 'destroy'
-        working-directory: Terraform/remote-backend
         run: |
-          terraform init
-          terraform destroy -auto-approve
+          aws dynamodb delete-table \
+            --table-name terraform-ansible-dynamodb-state-table
+
+      - name: Delete S3 Bucket
+        if: github.event.inputs.action == 'destroy'
+        run: |
+          aws s3 rb s3://terraform-state-bucket-ap-am-2026 --force
