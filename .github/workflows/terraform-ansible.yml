@@ -33,7 +33,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       ####################################################
-      # Backend Creation
+      # APPLY - REMOTE BACKEND
       ####################################################
 
       # - name: Create Backend Resources
@@ -58,7 +58,7 @@ jobs:
           terraform apply -auto-approve || true
 
       ####################################################
-      # APPLY
+      # APPLY - INFRASTRUCTURE
       ####################################################
 
       - name: Terraform Init
@@ -76,10 +76,18 @@ jobs:
         working-directory: Terraform
         run: terraform apply -auto-approve
 
+      ####################################################
+      # EXPORT OUTPUTS
+      ####################################################
+
       - name: Export Terraform Outputs
         if: github.event.inputs.action == 'apply'
         working-directory: Terraform
         run: terraform output -json server_inventory > ../inventory.json
+
+      ####################################################
+      # ANSIBLE
+      ####################################################
 
       - name: Setup Python
         if: github.event.inputs.action == 'apply'
@@ -91,9 +99,7 @@ jobs:
         if: github.event.inputs.action == 'apply'
         run: |
           mkdir -p ~/.ssh
-
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/ansible-kp.pem
-
           chmod 400 ~/.ssh/ansible-kp.pem
 
       - name: Set Inventory Key Path
@@ -109,8 +115,8 @@ jobs:
         if: github.event.inputs.action == 'apply'
         run: |
           ssh-keygen -y \
-          -f ~/.ssh/ansible-kp.pem \
-          > Ansible/roles/ssh/files/ansible.pub
+            -f ~/.ssh/ansible-kp.pem \
+            > Ansible/roles/ssh/files/ansible.pub
 
       - name: Install Ansible
         if: github.event.inputs.action == 'apply'
@@ -131,15 +137,15 @@ jobs:
           ansible-playbook playbooks/site.yml
 
       ####################################################
-      # DESTROY
+      # DESTROY - MAIN INFRASTRUCTURE
       ####################################################
 
-      - name: Terraform Init Destroy
+      - name: Initialize Main Terraform
         if: github.event.inputs.action == 'destroy'
         working-directory: Terraform
         run: terraform init
 
-      - name: Terraform Destroy
+      - name: Destroy Main Infrastructure
         if: github.event.inputs.action == 'destroy'
         working-directory: Terraform
         run: terraform destroy -auto-approve
