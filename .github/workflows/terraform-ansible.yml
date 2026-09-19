@@ -36,19 +36,26 @@ jobs:
       # Backend Creation
       ####################################################
 
-      - name: Create Backend Resources
-        run: |
-          aws s3api head-bucket \
-            --bucket terraform-state-bucket-ap-am-2026 \
-            || aws s3 mb s3://terraform-state-bucket-ap-am-2026
+      # - name: Create Backend Resources
+      #   run: |
+      #     aws s3api head-bucket \
+      #       --bucket terraform-state-bucket-ap-am-2026 \
+      #       || aws s3 mb s3://terraform-state-bucket-ap-am-2026
 
-          aws dynamodb describe-table \
-            --table-name terraform-ansible-dynamodb-state-table \
-            || aws dynamodb create-table \
-            --table-name terraform-ansible-dynamodb-state-table \
-            --attribute-definitions AttributeName=LockID,AttributeType=S \
-            --key-schema AttributeName=LockID,KeyType=HASH \
-            --billing-mode PAY_PER_REQUEST
+      #     aws dynamodb describe-table \
+      #       --table-name terraform-ansible-dynamodb-state-table \
+      #       || aws dynamodb create-table \
+      #       --table-name terraform-ansible-dynamodb-state-table \
+      #       --attribute-definitions AttributeName=LockID,AttributeType=S \
+      #       --key-schema AttributeName=LockID,KeyType=HASH \
+      #       --billing-mode PAY_PER_REQUEST
+
+      - name: Create Remote Backend
+        if: github.event.inputs.action == 'apply'
+        working-directory: Terraform/remote-backend
+        run: |
+          terraform init
+          terraform apply -auto-approve || true
 
       ####################################################
       # APPLY
@@ -136,3 +143,15 @@ jobs:
         if: github.event.inputs.action == 'destroy'
         working-directory: Terraform
         run: terraform destroy -auto-approve
+
+      - name: Empty Backend Bucket
+        if: github.event.inputs.action == 'destroy'
+        run: |
+          aws s3 rm s3://terraform-state-bucket-ap-am-2026 --recursive || true
+
+      - name: Destroy Remote Backend
+        if: github.event.inputs.action == 'destroy'
+        working-directory: Terraform/remote-backend
+        run: |
+          terraform init
+          terraform destroy -auto-approve
