@@ -1,3 +1,2 @@
 terraform-ansible-app-key
 *.pem
-script/pipeline.py
